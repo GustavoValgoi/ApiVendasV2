@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs';
-import User from '../typeorm/entities/User';
-import UsersRepository from '../typeorm/repositories/UserRepository';
+import User from '../infra/typeorm/entities/User';
+import UsersRepository from '../infra/typeorm/repositories/UserRepository';
 import AppError from '@shared/errors/AppError';
 import uploadConfig from '@config/upload';
 import { getCustomRepository } from 'typeorm';
