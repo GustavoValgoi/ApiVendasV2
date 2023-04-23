@@ -1,3 +1,4 @@
+import { container } from 'tsyringe';
 import { Request, Response } from 'express';
 import ShowCustomerService from '../../../services/ShowCustomerService';
 import ListCustomerService from '../../../services/ListCustomerService';
@@ -7,7 +8,7 @@ import CreateCustomerService from '../../../services/CreateCustomerService';
 
 class CustomersController {
   public async index(req: Request, res: Response): Promise<Response> {
-    const listCustomers = new ListCustomerService();
+    const listCustomers = container.resolve(ListCustomerService);
 
     const customers = await listCustomers.execute();
 
@@ -27,7 +28,7 @@ class CustomersController {
   public async create(req: Request, res: Response): Promise<Response> {
     const { name, email } = req.body;
 
-    const createCustomer = new CreateCustomerService();
+    const createCustomer = container.resolve(CreateCustomerService);
 
     const customer = await createCustomer.execute({ name, email });
 
@@ -48,7 +49,7 @@ class CustomersController {
   public async delete(req: Request, res: Response): Promise<Response> {
     const { id } = req.params;
 
-    const deleteCustomer = new DeleteCustomerService();
+    const deleteCustomer = container.resolve(DeleteCustomerService);
 
     await deleteCustomer.execute({ id });
 

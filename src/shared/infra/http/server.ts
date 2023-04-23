@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import 'dotenv/config';
 import 'express-async-errors';
 import '@shared/infra/typeorm';
+import '@shared/container';
 import express, { NextFunction, Request, Response } from 'express';
 import cors from 'cors';
 import routes from './routes';
