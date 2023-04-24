@@ -8,9 +8,13 @@ import CreateCustomerService from '../../../services/CreateCustomerService';
 
 class CustomersController {
   public async index(req: Request, res: Response): Promise<Response> {
+
+    const page = req.query.page ? Number(req.query.page) : 1;
+    const limit = req.query.limit ? Number(req.query.limit) : 15;
+
     const listCustomers = container.resolve(ListCustomerService);
 
-    const customers = await listCustomers.execute();
+    const customers = await listCustomers.execute({ page, limit });
 
     return res.status(200).json(customers);
   }
@@ -18,7 +22,7 @@ class CustomersController {
   public async show(req: Request, res: Response): Promise<Response> {
     const { id } = req.params;
 
-    const showCustomer = new ShowCustomerService();
+    const showCustomer = container.resolve(ShowCustomerService);
 
     const customer = await showCustomer.execute({ id });
 
@@ -39,7 +43,7 @@ class CustomersController {
     const { name, email } = req.body;
     const { id } = req.params;
 
-    const updateCustomer = new UpdateCustomerService();
+    const updateCustomer = container.resolve(UpdateCustomerService);
 
     const customer = await updateCustomer.execute({ id, name, email });
 

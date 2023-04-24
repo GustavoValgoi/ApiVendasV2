@@ -1,8 +1,9 @@
 import { Repository, getRepository } from 'typeorm';
 import Customer from '../entities/Customer';
-import { ICustomerRepository } from '@modules/customers/domain/repositories/ICustomersRepository';
+import { ICustomerRepository, SearchParams } from '@modules/customers/domain/repositories/ICustomersRepository';
 import { ICreateCustomer } from '@modules/customers/domain/models/ICreateCustomer';
 import { ICustomer } from '@modules/customers/domain/models/ICustomer';
+import { ICustomerPaginate } from '@modules/customers/domain/models/ICustomerPaginate';
 
 class CustomersRepository implements ICustomerRepository {
   private ormRepository: Repository<ICustomer>;
@@ -23,12 +24,31 @@ class CustomersRepository implements ICustomerRepository {
   }
 
   public async delete(customer: ICustomer): Promise<void> {
-    await this.ormRepository.delete(customer);
+    await this.ormRepository.remove(customer);
   }
 
-  public async findAll(): Promise<ICustomer[] | undefined> {
-    const customers = await this.ormRepository.find();
-    return customers;
+  public async findAll({
+    page,
+    skip,
+    take,
+  }: SearchParams): Promise<ICustomerPaginate> {
+    const [
+      customers,
+      count,
+    ] = await this.ormRepository
+      .createQueryBuilder()
+      .skip(skip)
+      .take(take)
+      .getManyAndCount();
+
+    const result = {
+      per_page: take,
+      total: count,
+      current_page: page,
+      data: customers,
+    };
+
+    return result;
   }
 
   public async findByName(name: string): Promise<ICustomer | undefined> {
