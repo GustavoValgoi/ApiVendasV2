@@ -1,6 +1,9 @@
 import { Repository, getRepository } from 'typeorm';
 import Customer from '../entities/Customer';
-import { ICustomerRepository, SearchParams } from '@modules/customers/domain/repositories/ICustomersRepository';
+import {
+  ICustomerRepository,
+  SearchParams,
+} from '@modules/customers/domain/repositories/ICustomersRepository';
 import { ICreateCustomer } from '@modules/customers/domain/models/ICreateCustomer';
 import { ICustomer } from '@modules/customers/domain/models/ICustomer';
 import { ICustomerPaginate } from '@modules/customers/domain/models/ICustomerPaginate';
@@ -32,10 +35,7 @@ class CustomersRepository implements ICustomerRepository {
     skip,
     take,
   }: SearchParams): Promise<ICustomerPaginate> {
-    const [
-      customers,
-      count,
-    ] = await this.ormRepository
+    const [customers, count] = await this.ormRepository
       .createQueryBuilder()
       .skip(skip)
       .take(take)

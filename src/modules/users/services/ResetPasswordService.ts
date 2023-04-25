@@ -1,42 +1,44 @@
-import { getCustomRepository } from 'typeorm';
-import { isAfter, addHours } from 'date-fns';
-import { hash } from 'bcryptjs';
+import { inject, injectable } from 'tsyringe';
 import AppError from '@shared/errors/AppError';
-import UsersRepository from '../infra/typeorm/repositories/UserRepository';
-import UserTokensRepository from '../infra/typeorm/repositories/UserTokensRepository';
+import { hash } from 'bcryptjs';
+import { isAfter, addHours } from 'date-fns';
+import { IResetPassword } from '../domain/models/IResetPassword';
+import { IUsersRepository } from '../domain/repositories/IUsersRepository';
+import { IUserTokensRepository } from '../domain/repositories/IUserTokensRepository';
 
-interface IRequest {
-  token: string;
-  password: string;
-}
-
+@injectable()
 class ResetPasswordService {
-  public async execute({ token, password }: IRequest): Promise<void> {
-    const usersRepository = getCustomRepository(UsersRepository);
-    const userTokenRepository = getCustomRepository(UserTokensRepository);
+  constructor(
+    @inject('UsersRepository')
+    private usersRepository: IUsersRepository,
 
-    const userToken = await userTokenRepository.findByToken(token);
+    @inject('UserTokensRepository')
+    private userTokensRepository: IUserTokensRepository,
+  ) {}
+
+  public async execute({ token, password }: IResetPassword): Promise<void> {
+    const userToken = await this.userTokensRepository.findByToken(token);
 
     if (!userToken) {
-      throw new AppError('User token does not exists.', 404);
+      throw new AppError('User Token does not exists.');
     }
 
-    const user = await usersRepository.findById(userToken.user_id);
+    const user = await this.usersRepository.findById(userToken.user_id);
 
     if (!user) {
-      throw new AppError('User not found.', 404);
+      throw new AppError('User does not exists.');
     }
 
-    const tokenCreateAt = userToken.createdAt;
-    const compareDate = addHours(tokenCreateAt, 2);
+    const tokenCreatedAt = userToken.createdAt;
+    const compareDate = addHours(tokenCreatedAt, 2);
 
     if (isAfter(Date.now(), compareDate)) {
       throw new AppError('Token expired.');
     }
 
-    user.password = await hash(password, 12);
+    user.password = await hash(password, 8);
 
-    await usersRepository.save(user);
+    await this.usersRepository.save(user);
   }
 }
 
