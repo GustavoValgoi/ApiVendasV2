@@ -11,6 +11,8 @@ import UsersRepository from '@modules/users/infra/typeorm/repositories/UserRepos
 import { IUserTokensRepository } from '@modules/users/domain/repositories/IUserTokensRepository';
 import UserTokensRepository from '@modules/users/infra/typeorm/repositories/UserTokensRepository';
 
+import '@modules/users/providers';
+
 container.registerSingleton<ICustomerRepository>(
   'CustomersRepository',
   CustomersRepository,
