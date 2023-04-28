@@ -7,7 +7,7 @@ services:
     container_name: apivendas-app
     tty: true
     ports:
-      - '5000:5000'
+      - '3001:3001'
     volumes:
       - .:/home/node/app
     depends_on:

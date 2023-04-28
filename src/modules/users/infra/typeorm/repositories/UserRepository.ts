@@ -1,9 +1,9 @@
+import User from '../entities/User';
 import { ICreateUser } from '@modules/users/domain/models/ICreateUser';
 import { IPaginateUser } from '@modules/users/domain/models/IPaginateUser';
 import { IUsersRepository } from '@modules/users/domain/repositories/IUsersRepository';
-import { Repository, getRepository } from 'typeorm';
-import User from '../entities/User';
-// import { dataSource } from '@shared/infra/typeorm';
+import { Repository } from 'typeorm';
+import { dataSource } from '@shared/infra/typeorm';
 
 type SearchParams = {
   page: number;
@@ -15,7 +15,7 @@ class UsersRepository implements IUsersRepository {
   private ormRepository: Repository<User>;
 
   constructor() {
-    this.ormRepository = getRepository(User);
+    this.ormRepository = dataSource.getRepository(User);
   }
 
   public async create({ name, email, password }: ICreateUser): Promise<User> {
@@ -54,7 +54,7 @@ class UsersRepository implements IUsersRepository {
   }
 
   public async findByName(name: string): Promise<User | null> {
-    const user = await this.ormRepository.findOne({
+    const user = await this.ormRepository.findOneBy({
       name,
     });
 
@@ -62,7 +62,7 @@ class UsersRepository implements IUsersRepository {
   }
 
   public async findById(id: string): Promise<User | null> {
-    const user = await this.ormRepository.findOne({
+    const user = await this.ormRepository.findOneBy({
       id,
     });
 
@@ -70,7 +70,7 @@ class UsersRepository implements IUsersRepository {
   }
 
   public async findByEmail(email: string): Promise<User | null> {
-    const user = await this.ormRepository.findOne({
+    const user = await this.ormRepository.findOneBy({
       email,
     });
 
