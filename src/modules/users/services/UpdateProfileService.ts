@@ -4,6 +4,7 @@ import { compare, hash } from 'bcryptjs';
 import { IUpdateProfile } from '../domain/models/IUpdateProfile';
 import { IUser } from '../domain/models/IUser';
 import { IUsersRepository } from '../domain/repositories/IUsersRepository';
+import RedisCache from '@shared/cache/RedisCache';
 
 @injectable()
 class UpdateProfileService {
@@ -48,7 +49,10 @@ class UpdateProfileService {
     user.name = name;
     user.email = email;
 
+    
     await this.usersRepository.save(user);
+    
+    await RedisCache.invalidate(`api-vendas-USER_PROFILE-${user_id}`);
 
     return user;
   }
