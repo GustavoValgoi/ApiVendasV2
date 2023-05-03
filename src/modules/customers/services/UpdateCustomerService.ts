@@ -3,6 +3,8 @@ import { injectable, inject } from 'tsyringe';
 import { ICustomerRepository } from '../domain/repositories/ICustomersRepository';
 import { ICustomer } from '../domain/models/ICustomer';
 import { IUpdateCustomer } from '../domain/models/IUpdateCustomer';
+import redisCache from '@shared/cache/RedisCache';
+
 @injectable()
 class UpdateCustomerService {
 
@@ -29,6 +31,8 @@ class UpdateCustomerService {
     customer.email = email;
 
     await this.customersRepository.save(customer);
+    
+    await redisCache.invalidate(`api-vendas-CUSTOMER-SHOW-${id}`);
 
     return customer;
   }

@@ -20,10 +20,10 @@ import { AddOrderFieldtoOrders1682384988427 } from './migrations/1682384988427-A
 
 export const dataSource = new DataSource({
   type: 'postgres',
-  host: 'localhost',
-  port: 32768,
+  host: 'db',
+  port: 5432,
   username: 'postgres',
-  password: 'postgrespw',
+  password: 'docker',
   database: 'api_vendas',
   entities: [User, UserToken, Customer, Order, OrdersProducts, Product],
   migrations: [
