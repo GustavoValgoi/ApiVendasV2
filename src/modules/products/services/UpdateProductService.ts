@@ -30,13 +30,13 @@ class UpdateProductService {
       throw new AppError('There is already one product with this name');
     }
 
-    await redisCache.invalidate('api-vendas-PRODUCT_LIST');
-
     product.name = name;
     product.price = price;
     product.quantity = quantity;
 
     await this.productsRepository.save(product);
+
+    await redisCache.invalidate(`api-vendas-PRODUCT-SHOW-${id}`);
 
     return product;
   }
