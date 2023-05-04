@@ -5,6 +5,7 @@ import { IOrdersRepository } from '../domain/repositories/IOrdersRepository';
 import { IOrder } from '../domain/models/IOrder';
 import { ICustomerRepository } from '@modules/customers/domain/repositories/ICustomersRepository';
 import { IProductsRepository } from '@modules/products/domain/repositories/IProductsRepository';
+import redisCache from '@shared/cache/RedisCache';
 
 @injectable()
 class CreateOrderService {
@@ -79,6 +80,10 @@ class CreateOrderService {
         existsProducts.filter(p => p.id === product.product_id)[0].quantity -
         product.quantity,
     }));
+
+    updatedProductsQuantity.forEach(async (product) => {
+      await redisCache.invalidate(`api-vendas-PRODUCT-SHOW-${product.id}`);
+    });
 
     await this.productsRepository.updateStock(updatedProductsQuantity);
 
