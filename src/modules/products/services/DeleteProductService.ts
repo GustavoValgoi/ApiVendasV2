@@ -1,8 +1,8 @@
 import { inject, injectable } from 'tsyringe';
-import redisCache from '@shared/cache/RedisCache';
-import AppError from '@shared/errors/AppError';
 import { IDeleteProduct } from '../domain/models/IDeleteProduct';
 import { IProductsRepository } from '../domain/repositories/IProductsRepository';
+import AppError from '@shared/errors/AppError';
+import redisCache from '@shared/cache/RedisCache';
 
 @injectable()
 class DeleteProductService {
