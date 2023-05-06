@@ -1,9 +1,9 @@
 import { inject, injectable } from 'tsyringe';
-import redisCache from '@shared/cache/RedisCache';
-import AppError from '@shared/errors/AppError';
 import { IUpdateProduct } from '../domain/models/IUpdateProduct';
 import { IProductsRepository } from '../domain/repositories/IProductsRepository';
 import { IProduct } from '../domain/models/IProduct';
+import AppError from '@shared/errors/AppError';
+import redisCache from '@shared/cache/RedisCache';
 
 @injectable()
 class UpdateProductService {
@@ -26,17 +26,17 @@ class UpdateProductService {
 
     const productExists = await this.productsRepository.findByName(name);
 
-    if (productExists) {
-      throw new AppError('There is already one product with this name');
+    if (productExists && productExists.id !== id) {
+      throw new AppError('There is already one product with this name.');
     }
-
-    await redisCache.invalidate('api-vendas-PRODUCT_LIST');
 
     product.name = name;
     product.price = price;
     product.quantity = quantity;
 
     await this.productsRepository.save(product);
+
+    await redisCache.invalidate(`api-vendas-PRODUCT-SHOW-${id}`);
 
     return product;
   }

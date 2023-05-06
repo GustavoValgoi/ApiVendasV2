@@ -4,7 +4,7 @@ import DiskStorageProvider from '@shared/providers/StorageProvider/DiskStoragePr
 import { IUsersRepository } from '../domain/repositories/IUsersRepository';
 import { inject, injectable } from 'tsyringe';
 import { IUpdateUserAvatar } from '../domain/models/IUpdateUserAvatar';
-import RedisCache from '@shared/cache/RedisCache';
+import redisCache from '@shared/cache/RedisCache';
 
 @injectable()
 class UpdateUserAvatarService {
@@ -35,7 +35,7 @@ class UpdateUserAvatarService {
 
     await this.usersRepository.save(user);
 
-    await RedisCache.invalidate(`api-vendas-USER_PROFILE-${user_id}`);
+    await redisCache.invalidate(`api-vendas-USER-PROFILE-${user_id}`);
 
     return user;
   }

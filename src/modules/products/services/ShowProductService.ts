@@ -1,8 +1,9 @@
 import { inject, injectable } from 'tsyringe';
-import AppError from '@shared/errors/AppError';
 import { IProductsRepository } from '../domain/repositories/IProductsRepository';
 import { IShowProduct } from '../domain/models/IShowProduct';
 import { IProduct } from '../domain/models/IProduct';
+import AppError from '@shared/errors/AppError';
+import redisCache from '@shared/cache/RedisCache';
 
 @injectable()
 class ShowProductService {
@@ -12,10 +13,16 @@ class ShowProductService {
   ) {}
 
   public async execute({ id }: IShowProduct): Promise<IProduct> {
-    const product = await this.productsRepository.findById(id);
-
+    let product = await redisCache.recover<IProduct>(`api-vendas-PRODUCT-SHOW-${id}`);
+    
     if (!product) {
-      throw new AppError('Product not found.');
+      product = await this.productsRepository.findById(id);
+
+      if (!product) {
+        throw new AppError('Product not found.');
+      }
+
+      await redisCache.save(`api-vendas-PRODUCT-SHOW-${id}`, product);
     }
 
     return product;
